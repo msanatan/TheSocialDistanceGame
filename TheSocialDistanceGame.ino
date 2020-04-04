@@ -74,14 +74,20 @@ class Player {
     int speedY = 16;
     int lives = 3;
     int frame = 0;
+    int lastHit;
     bool invincible;
 
     int getSize() {
       return size;
     }
 
+    int getInvincibilityDuration() {
+      return invincibilityDuration;
+    }
+
   private:
     int size = 16;
+    int invincibilityDuration = 3;
 };
 
 Player player;
@@ -206,6 +212,16 @@ void loop() {
   arduboy.print("Score: ");
   arduboy.print(score);
 
+  // Check if player is still invincible
+  if (player.invincible) {
+    unsigned long timeSinceHit = currentTime - player.lastHit;
+    float lastHitSeconds = timeSinceHit * (1.0f / 1000.0f);
+
+    if (lastHitSeconds >= player.getInvincibilityDuration()) {
+      player.invincible = false;
+    }
+  }
+
   // Move player
   if (arduboy.pressed(LEFT_BUTTON) && player.x > 0) {
     player.x = player.x - player.speedX;
@@ -255,6 +271,7 @@ void loop() {
     if (pedestrians[i].collide(player.x, player.y, player.getSize(), player.getSize()) && !player.invincible) {
       player.lives--;
       player.invincible = true;
+      player.lastHit = millis();
     }
 
     // Set pedestrians off the screen to be inactive
