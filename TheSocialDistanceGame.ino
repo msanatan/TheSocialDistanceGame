@@ -59,6 +59,8 @@ unsigned long previousTime = 0;
 float totalSeconds = 0;
 bool paused = false;
 int score = 0;
+enum state {MENU, PLAYING, GAMEOVER};
+state gameState;
 
 // HUD
 int heartX = 2;
@@ -87,7 +89,7 @@ class Player {
 
   private:
     int size = 16;
-    int invincibilityDuration = 3;
+    int invincibilityDuration = 2;
 };
 
 Player player;
@@ -172,6 +174,7 @@ void setup() {
   arduboy.initRandomSeed();
   arduboy.setFrameRate(FPS);
   addPedestrians(0);
+  gameState = PLAYING;
   previousTime = millis();
   arduboy.clear();
 }
@@ -182,126 +185,150 @@ void loop() {
   }
   arduboy.pollButtons();
 
-  // Handle pausing mechanics
-  if (arduboy.justPressed(A_BUTTON)) {
-    paused = !paused;
-    previousTime = millis();
-  }
+  switch (gameState) {
+    case PLAYING: {
+        // Check if game over
+        if (player.lives == 0) {
+          gameState = GAMEOVER;
+          return;
+        }
 
-  if (paused) {
-    return;
-  }
+        // Handle pausing mechanics
+        if (arduboy.justPressed(A_BUTTON)) {
+          paused = !paused;
+          previousTime = millis();
+        }
 
-  // Manually get delta time
-  unsigned long currentTime = millis();
-  unsigned long deltaTime = currentTime - previousTime;
-  previousTime = currentTime;
-  float deltaSeconds = deltaTime * (1.0f / 1000.0f);
-  // Add it to our total time
-  totalSeconds += deltaSeconds;
-  // Convert to integer to update our score
-  score = static_cast<int>(totalSeconds);
+        if (paused) {
+          return;
+        }
 
-  arduboy.clear();
-  // HUD
-  for (int i = 0; i < player.lives; i++) {
-    int xPosition = heartX + (i * heartXSeparator);
-    Sprites::drawOverwrite(xPosition, heartY, heart, 0);
-  }
-  arduboy.setCursor(62, 0);
-  arduboy.print("Score: ");
-  arduboy.print(score);
+        // Manually get delta time
+        unsigned long currentTime = millis();
+        unsigned long deltaTime = currentTime - previousTime;
+        previousTime = currentTime;
+        float deltaSeconds = deltaTime * (1.0f / 1000.0f);
+        // Add it to our total time
+        totalSeconds += deltaSeconds;
+        // Convert to integer to update our score
+        score = static_cast<int>(totalSeconds);
 
-  // Check if player is still invincible
-  if (player.invincible) {
-    unsigned long timeSinceHit = currentTime - player.lastHit;
-    float lastHitSeconds = timeSinceHit * (1.0f / 1000.0f);
+        arduboy.clear();
+        // HUD
+        for (int i = 0; i < player.lives; i++) {
+          int xPosition = heartX + (i * heartXSeparator);
+          Sprites::drawOverwrite(xPosition, heartY, heart, 0);
+        }
+        arduboy.setCursor(62, 0);
+        arduboy.print("Score: ");
+        arduboy.print(score);
 
-    if (lastHitSeconds >= player.getInvincibilityDuration()) {
-      player.invincible = false;
-    }
-  }
+        // Check if player is still invincible
+        if (player.invincible) {
+          unsigned long timeSinceHit = currentTime - player.lastHit;
+          float lastHitSeconds = timeSinceHit * (1.0f / 1000.0f);
 
-  // Move player
-  if (arduboy.pressed(LEFT_BUTTON) && player.x > 0) {
-    player.x = player.x - player.speedX;
-    player.frame = 1;
-  } else if (arduboy.pressed(RIGHT_BUTTON) && player.x + player.getSize() < WIDTH) {
-    player.x = player.x + player.speedX;
-    player.frame = 0;
-  }
+          if (lastHitSeconds >= player.getInvincibilityDuration()) {
+            player.invincible = false;
+          }
+        }
 
-  if (arduboy.justPressed(UP_BUTTON) && player.y > 16) {
-    player.y = player.y - player.speedY;
-  } else if (arduboy.justPressed(DOWN_BUTTON) && player.y + player.getSize() < HEIGHT) {
-    player.y = player.y + player.speedY;
-  }
+        // Move player
+        if (arduboy.pressed(LEFT_BUTTON) && player.x > 0) {
+          player.x = player.x - player.speedX;
+          player.frame = 1;
+        } else if (arduboy.pressed(RIGHT_BUTTON) && player.x + player.getSize() < WIDTH) {
+          player.x = player.x + player.speedX;
+          player.frame = 0;
+        }
 
-  // Flag the pedestrian to move
-  if (arduboy.everyXFrames(10)) {
-    movePedestrians = true;
-  }
+        if (arduboy.justPressed(UP_BUTTON) && player.y > 16) {
+          player.y = player.y - player.speedY;
+        } else if (arduboy.justPressed(DOWN_BUTTON) && player.y + player.getSize() < HEIGHT) {
+          player.y = player.y + player.speedY;
+        }
 
-  // Update the frame of the Pedestrian
-  if (arduboy.everyXFrames(20)) {
-    updatePedestrianFrame = true;
-  }
+        // Flag the pedestrian to move
+        if (arduboy.everyXFrames(10)) {
+          movePedestrians = true;
+        }
 
-  int nextActive = -1;
-  // Update pedestrians
-  for (int i = 0; i < MAX_PEDESTRIANS; i++)  {
-    // If the sprite is not active, there's not much to update
-    // However, we mark it as the next available sprite to use
-    if (!pedestrians[i].active) {
-      if (nextActive == -1) {
-        nextActive = i;
+        // Update the frame of the Pedestrian
+        if (arduboy.everyXFrames(20)) {
+          updatePedestrianFrame = true;
+        }
+
+        int nextActive = -1;
+        // Update pedestrians
+        for (int i = 0; i < MAX_PEDESTRIANS; i++)  {
+          // If the sprite is not active, there's not much to update
+          // However, we mark it as the next available sprite to use
+          if (!pedestrians[i].active) {
+            if (nextActive == -1) {
+              nextActive = i;
+            }
+            continue;
+          }
+
+          // Move active pedestrians
+          if (movePedestrians) {
+            if (pedestrians[i].active) {
+              pedestrians[i].x += pedestrians[i].speedX;
+              pedestrians[i].y += pedestrians[i].speedY;
+            }
+          }
+
+          // Check for collisions
+          if (pedestrians[i].collide(player.x, player.y, player.getSize(), player.getSize()) && !player.invincible) {
+            player.lives--;
+            player.invincible = true;
+            player.lastHit = millis();
+          }
+
+          // Set pedestrians off the screen to be inactive
+          if (pedestrians[i].x >= WIDTH + 10 || pedestrians[i].x < -18) {
+            pedestrians[i].active = false;
+            activePedestrians--;
+          }
+
+          if (updatePedestrianFrame) {
+            pedestrians[i].nextFrame();
+          }
+        }
+
+        // Reset pedestrian flags
+        updatePedestrianFrame = false;
+        movePedestrians = false;
+
+        // Add a new pedestrian
+        // We use the lastSpawnTime to ensure that many frames in a second
+        // don't keep spawning pedestrians
+        if (score % PEDESTRIAN_SPAWN_TIME == 0 && score != lastSpawnTime) {
+          addPedestrians(nextActive);
+          lastSpawnTime = score;
+        }
+
+        // Draw pedestrians
+        for (int i = 0; i < MAX_PEDESTRIANS; i++)  {
+          Sprites::drawOverwrite(pedestrians[i].x, pedestrians[i].y, pedestrianSprite, pedestrians[i].frame);
+        }
+
+        Sprites::drawOverwrite(player.x, player.y, playerSprite, player.frame);
       }
-      continue;
-    }
-
-    // Move active pedestrians
-    if (movePedestrians) {
-      if (pedestrians[i].active) {
-        pedestrians[i].x += pedestrians[i].speedX;
-        pedestrians[i].y += pedestrians[i].speedY;
+      break;
+    case GAMEOVER: {
+        arduboy.clear();
+        arduboy.setTextSize(2);
+        arduboy.print("Game Over");
+        arduboy.setCursor(0, 20);
+        arduboy.print("Score:");
+        arduboy.print(score);
+        arduboy.setTextSize(1);
+        arduboy.setCursor(0, 50);
+        arduboy.print("Press A to continue");
       }
-    }
-
-    // Check for collisions
-    if (pedestrians[i].collide(player.x, player.y, player.getSize(), player.getSize()) && !player.invincible) {
-      player.lives--;
-      player.invincible = true;
-      player.lastHit = millis();
-    }
-
-    // Set pedestrians off the screen to be inactive
-    if (pedestrians[i].x >= WIDTH + 10 || pedestrians[i].x < -18) {
-      pedestrians[i].active = false;
-      activePedestrians--;
-    }
-
-    if (updatePedestrianFrame) {
-      pedestrians[i].nextFrame();
-    }
+      break;
   }
-
-  // Reset pedestrian flags
-  updatePedestrianFrame = false;
-  movePedestrians = false;
-
-  // Add a new pedestrian
-  // We use the lastSpawnTime to ensure that many frames in a second
-  // don't keep spawning pedestrians
-  if (score % PEDESTRIAN_SPAWN_TIME == 0 && score != lastSpawnTime) {
-    addPedestrians(nextActive);
-    lastSpawnTime = score;
-  }
-
-  // Draw pedestrians
-  for (int i = 0; i < MAX_PEDESTRIANS; i++)  {
-    Sprites::drawOverwrite(pedestrians[i].x, pedestrians[i].y, pedestrianSprite, pedestrians[i].frame);
-  }
-
-  Sprites::drawOverwrite(player.x, player.y, playerSprite, player.frame);
+  // Render the state of the game scene
   arduboy.display();
 }
