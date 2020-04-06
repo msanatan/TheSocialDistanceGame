@@ -99,7 +99,7 @@ class Player {
 
   private:
     int size = 16;
-    int invincibilityDuration = 2;
+    int invincibilityDuration = 1;
 };
 
 Player player;
