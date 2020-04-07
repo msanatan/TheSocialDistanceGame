@@ -181,8 +181,10 @@ void addPedestrians(int i) {
 }
 
 void reset() {
+  delete player;
   player = new Player();
   for (int i = 0; i < MAX_PEDESTRIANS; i++) {
+    delete pedestrians[i];
     pedestrians[i] = new Pedestrian();
   }
   addPedestrians(0);
