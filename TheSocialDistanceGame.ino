@@ -90,8 +90,8 @@ class Player {
     int speedY = 16;
     int lives = 3;
     int frame = 0;
-    int lastHit;
-    bool justHit;
+    int lastHit = 0;
+    bool justHit = false;
 
     int getSize() {
       return size;
