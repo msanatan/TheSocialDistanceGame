@@ -7,6 +7,7 @@
 #include "audio.h"
 #include "images.h"
 #include "Player.h"
+#include "Pedestrian.h"
 Arduboy2 arduboy;
 ArduboyTones sound(arduboy.audio.enabled);
 
@@ -32,60 +33,6 @@ int heartY = 0;
 Player player;
 
 // Pedestrians
-class Pedestrian
-{
-public:
-  int x = -20; // So they will be offscreen when initialized
-  int y;
-  int speedX;
-  int speedY;
-  int frame;
-  bool active;
-
-  int getSize()
-  {
-    return size;
-  }
-
-  void nextFrame()
-  {
-    // First 3 frames if moving to the right
-    if (speedX < 0)
-    {
-      if (frame == 3)
-      {
-        frame = 0;
-      }
-      else
-      {
-        frame++;
-      }
-    }
-    else
-    { // Last 3 frames if moving to the left
-      if (frame == 7)
-      {
-        frame = 4;
-      }
-      else
-      {
-        frame++;
-      }
-    }
-  }
-
-  bool collide(int x, int y, int width, int height)
-  {
-    return x < this->x + this->size &&
-           x + width > this->x &&
-           y < this->y + this->size &&
-           y + height > this->y;
-  }
-
-private:
-  int size = 16;
-};
-
 const int MAX_PEDESTRIANS = 8;
 const int PEDESTRIAN_SPAWN_TIME = 1; // Spawn roughly every 2 seconds
 int lastSpawnTime = 0;
