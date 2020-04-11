@@ -3,7 +3,10 @@
 // The Social Distance Game
 
 #include <Arduboy2.h>
+#include <ArduboyTones.h>
+#include "audio.h"
 Arduboy2 arduboy;
+ArduboyTones sound(arduboy.audio.enabled);
 
 const unsigned char PROGMEM playerSprite[] =
 {
@@ -337,6 +340,7 @@ void loop() {
             --player.lives;
             player.justHit = true;
             player.lastHit = millis();
+            sound.tones(player_hit_sfx);
           }
 
           // Set pedestrians off the screen to be inactive
