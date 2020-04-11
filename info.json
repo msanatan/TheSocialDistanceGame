@@ -1,0 +1,16 @@
+{
+    "title": "The Social Distance Game",
+    "description": "Keep your distance from pedestrians for as long as you can",
+    "version": "1.0.0",
+    "device": "Arduboy",
+    "author": "msanatan",
+    "url": "https://msanatan.com",
+    "genre": "Arcade",
+    "buttonUp": "up",
+    "buttonDown": "down",
+    "buttonLeft": "left",
+    "buttonRight": "right",
+    "buttonA": "pause",
+    "buttonB": "pause",
+    "date": "April 2020"
+}
