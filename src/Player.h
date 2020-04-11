@@ -1,5 +1,5 @@
-#ifndef _PLAYER_H
-#define _PLAYER_H
+#ifndef PLAYER_H
+#define PLAYER_H
 
 class Player
 {
@@ -28,4 +28,4 @@ public:
     }
 };
 
-#endif // !_PLAYER_H
+#endif // !PLAYER_H

@@ -1,5 +1,5 @@
-#ifndef _PEDESTRIAN_H
-#define _PEDESTRIAN_H
+#ifndef PEDESTRIAN_H
+#define PEDESTRIAN_H
 
 class Pedestrian
 {
@@ -19,4 +19,4 @@ public:
     bool collide(int x, int y, int width, int height);
 };
 
-#endif // !_PEDESTRIAN_H
+#endif // !PEDESTRIAN_H
