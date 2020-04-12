@@ -2,6 +2,8 @@
 
 Keep out of people's way as long as you can!
 
+![Screenshot of the Social Distance Game](images/screenshot00.png)
+
 ## Controls
 
 D-PAD - Movement
