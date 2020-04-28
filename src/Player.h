@@ -1,6 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <Arduboy2.h>
+
 class Player
 {
 private:
@@ -8,24 +10,19 @@ private:
     int invincibilityDuration = 1;
 
 public:
-    int x = WIDTH / 2;
-    int y = HEIGHT / 2;
-    int speedX = 2;
-    int speedY = 16;
-    int lives = 3;
-    int frame = 0;
-    unsigned long lastHit = 0;
-    bool justHit = false;
+    int x;
+    int y;
+    int speedX;
+    int speedY;
+    int lives;
+    int frame;
+    unsigned long lastHit;
+    bool justHit;
 
-    int getSize()
-    {
-        return size;
-    }
-
-    int getInvincibilityDuration()
-    {
-        return invincibilityDuration;
-    }
+    Player();
+    Rect getRect();
+    int getSize();
+    int getInvincibilityDuration();
 };
 
 #endif // !PLAYER_H
