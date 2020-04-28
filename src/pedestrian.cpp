@@ -36,11 +36,3 @@ void Pedestrian::nextFrame()
         }
     }
 }
-
-bool Pedestrian::collide(int x, int y, int width, int height)
-{
-    return x < this->x + this->size &&
-           x + width > this->x &&
-           y < this->y + this->size &&
-           y + height > this->y;
-}

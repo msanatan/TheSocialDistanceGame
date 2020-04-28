@@ -19,7 +19,6 @@ public:
     Rect getRect();
     int getSize();
     void nextFrame();
-    bool collide(int x, int y, int width, int height);
 };
 
 #endif // !PEDESTRIAN_H
