@@ -1,5 +1,10 @@
 #include "Pedestrian.h"
 
+Rect Pedestrian::getRect()
+{
+    return Rect{this->x, this->y, this->size, this->size};
+}
+
 int Pedestrian::getSize()
 {
     return size;

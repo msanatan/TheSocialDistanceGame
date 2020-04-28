@@ -1,6 +1,8 @@
 #ifndef PEDESTRIAN_H
 #define PEDESTRIAN_H
 
+#include <Arduboy2.h>
+
 class Pedestrian
 {
 private:
@@ -14,6 +16,7 @@ public:
     int frame;
     bool active;
 
+    Rect getRect();
     int getSize();
     void nextFrame();
     bool collide(int x, int y, int width, int height);
