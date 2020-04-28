@@ -4,10 +4,10 @@
 
 #include <Arduboy2.h>
 #include <ArduboyTones.h>
-#include "audio.h"
-#include "images.h"
-#include "Player.h"
-#include "Pedestrian.h"
+#include "src/audio.h"
+#include "src/images.h"
+#include "src/Player.h"
+#include "src/Pedestrian.h"
 Arduboy2 arduboy;
 ArduboyTones sound(arduboy.audio.enabled);
 
