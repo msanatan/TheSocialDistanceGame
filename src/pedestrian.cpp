@@ -2,7 +2,7 @@
 
 Rect Pedestrian::getRect()
 {
-    return Rect{this->x, this->y, this->size, this->size};
+    return Rect{this->x + 3, this->y, 10, this->size};
 }
 
 int Pedestrian::getSize()

@@ -16,7 +16,7 @@ Player::Player()
 
 Rect Player::getRect()
 {
-    return Rect{this->x, this->y, this->size, this->size};
+    return Rect{this->x + 2, this->y, 12, this->size};
 }
 
 int Player::getSize()
