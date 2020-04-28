@@ -31,6 +31,7 @@ int heartY = 0;
 
 // Player
 Player player;
+Rect playerRect;
 
 // Pedestrians
 const int MAX_PEDESTRIANS = 8;
@@ -226,7 +227,7 @@ void loop()
     int nextActive = -1;
 
     // Update pedestrians
-    Rect playerRect = player.getRect();
+    playerRect = player.getRect();
     for (int i = 0; i < MAX_PEDESTRIANS; i++)
     {
       // If the sprite is not active, there's not much to update
