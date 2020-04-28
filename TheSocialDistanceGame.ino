@@ -224,7 +224,9 @@ void loop()
     }
 
     int nextActive = -1;
+
     // Update pedestrians
+    Rect playerRect = player.getRect();
     for (int i = 0; i < MAX_PEDESTRIANS; i++)
     {
       // If the sprite is not active, there's not much to update
@@ -249,7 +251,7 @@ void loop()
       }
 
       // Check for collisions
-      if (pedestrians[i].collide(player.x, player.y, player.getSize(), player.getSize()) && !player.justHit)
+      if (arduboy.collide(pedestrians[i].getRect(), playerRect) && !player.justHit)
       {
         --player.lives;
         player.justHit = true;
